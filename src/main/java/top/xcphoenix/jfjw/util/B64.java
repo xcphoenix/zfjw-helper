@@ -22,7 +22,7 @@ public class B64 {
 
     // Base64转16进制
     public static String b64ToHex(String s) {
-        String ret = "";
+        StringBuilder ret = new StringBuilder();
         int k = 0;
         int slop = 0;
         for(int i = 0; i < s.length(); ++i) {
@@ -30,30 +30,30 @@ public class B64 {
             int v = b64map.indexOf(s.charAt(i));
             if(v < 0) continue;
             if(k == 0) {
-                ret += int2char(v >> 2);
+                ret.append(int2char(v >> 2));
                 slop = v & 3;
                 k = 1;
             }
             else if(k == 1) {
-                ret += int2char((slop << 2) | (v >> 4));
+                ret.append(int2char((slop << 2) | (v >> 4)));
                 slop = v & 0xf;
                 k = 2;
             }
             else if(k == 2) {
-                ret += int2char(slop);
-                ret += int2char(v >> 2);
+                ret.append(int2char(slop));
+                ret.append(int2char(v >> 2));
                 slop = v & 3;
                 k = 3;
             }
             else {
-                ret += int2char((slop << 2) | (v >> 4));
-                ret += int2char(v & 0xf);
+                ret.append(int2char((slop << 2) | (v >> 4)));
+                ret.append(int2char(v & 0xf));
                 k = 0;
             }
         }
         if(k == 1)
-            ret += int2char(slop << 2);
-        return ret;
+            ret.append(int2char(slop << 2));
+        return ret.toString();
     }
 
     // 16进制转Base64

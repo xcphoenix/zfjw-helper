@@ -17,33 +17,29 @@ public interface KeyManager {
 
     /**
      * @see #getPublicKey(String, Map, CookieStore)
-     * @return
      */
-    RSA getPublicKey(String url) throws PublicKeyException;
+    RSA getPublicKey(String url);
 
     /**
      * @see #getPublicKey(String, Map, CookieStore)
-     * @return
      */
-    RSA getPublicKey(String url, CookieStore cookieStore) throws PublicKeyException;
+    RSA getPublicKey(String url, CookieStore cookieStore);
 
     /**
      * @see #getPublicKey(String, Map, CookieStore)
-     * @return
      */
-    RSA getPublicKey(String url, Map<String, String> headers) throws PublicKeyException;
+    RSA getPublicKey(String url, Map<String, String> headers);
 
     /**
      * 获取公钥
      *
-     * @param baseUrl 链接前缀
-     * @param headers 自定义请求头
+     * @param baseUrl     链接前缀
+     * @param headers     自定义请求头
      * @param cookieStore 自定义 cookie
      * @return 公钥
      * @throws PublicKeyException 获取异常
      */
-    RSA getPublicKey(String baseUrl, Map<String, String> headers, CookieStore cookieStore)
-            throws PublicKeyException;
+    RSA getPublicKey(String baseUrl, Map<String, String> headers, CookieStore cookieStore);
 
     /**
      * 使用公钥加密

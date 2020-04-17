@@ -1,6 +1,8 @@
 package top.xcphoenix.jfjw.model;
 
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * @author      xuanc
@@ -8,10 +10,12 @@ import lombok.Getter;
  * @version     1.0
  */
 @Getter
+@Setter
+@ToString
 public class LoginStatus {
 
-    private final boolean success;
-    private final String errorMsg;
+    private boolean success;
+    private String errorMsg;
 
     private static final String DEFAULT_MSG = "login failed";
 
@@ -21,14 +25,14 @@ public class LoginStatus {
     }
 
     public static LoginStatus success() {
-        return new LoginStatus(false, null);
+        return new LoginStatus(true, null);
     }
 
     public static LoginStatus error(String msg) {
         if (msg == null) {
             msg = DEFAULT_MSG;
         }
-        return new LoginStatus(true, msg);
+        return new LoginStatus(false, msg);
     }
 
 }

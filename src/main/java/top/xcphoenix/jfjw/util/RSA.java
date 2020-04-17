@@ -1,6 +1,7 @@
 package top.xcphoenix.jfjw.util;
 
 import java.math.BigInteger;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -21,7 +22,9 @@ public class RSA {
     }
 
     public String RSAEncrypt(String pwd) {
-        BigInteger r = RSADoPublic(pkcs1pad2(pwd, (n.bitLength() + 7) >> 3));
+        BigInteger r = RSADoPublic(
+                Objects.requireNonNull(pkcs1pad2(pwd, (n.bitLength() + 7) >> 3))
+        );
         String sp = r.toString(16);
         if ((sp.length() & 1) != 0)
             sp = "0" + sp;
@@ -33,7 +36,7 @@ public class RSA {
     }
 
     private static BigInteger pkcs1pad2(String s, int n) {
-        if (n < s.length() + 11) { // TODO: fix for utf-8
+        if (n < s.length() + 11) {
             System.err.println("Message too long for RSAEncoder");
             return null;
         }
@@ -43,7 +46,7 @@ public class RSA {
             int c = s.codePointAt(i--);
             if (c < 128) { // encode using utf-8
                 ba[--n] = new Byte(String.valueOf(c));
-            } else if ((c > 127) && (c < 2048)) {
+            } else if (c < 2048) {
                 ba[--n] = new Byte(String.valueOf((c & 63) | 128));
                 ba[--n] = new Byte(String.valueOf((c >> 6) | 192));
             } else {

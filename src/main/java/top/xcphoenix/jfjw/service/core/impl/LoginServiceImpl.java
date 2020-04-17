@@ -1,37 +1,28 @@
-package top.xcphoenix.jfjw.service.impl;
+package top.xcphoenix.jfjw.service.core.impl;
 
 import lombok.Setter;
 import org.apache.http.Consts;
-import org.apache.http.client.CookieStore;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import top.xcphoenix.jfjw.expection.LoginException;
-import top.xcphoenix.jfjw.expection.PublicKeyException;
 import top.xcphoenix.jfjw.manager.KeyManager;
-import top.xcphoenix.jfjw.manager.UrlManager;
 import top.xcphoenix.jfjw.manager.impl.KeyManagerImpl;
-import top.xcphoenix.jfjw.manager.impl.UrlManagerImpl;
-import top.xcphoenix.jfjw.model.LoginStatus;
 import top.xcphoenix.jfjw.model.LoginData;
+import top.xcphoenix.jfjw.model.LoginStatus;
 import top.xcphoenix.jfjw.model.User;
-import top.xcphoenix.jfjw.service.LoginService;
+import top.xcphoenix.jfjw.service.AbstractService;
+import top.xcphoenix.jfjw.service.core.LoginService;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 
 /**
  * @author xuanc
@@ -39,35 +30,15 @@ import java.util.stream.Collectors;
  * @date 2020/4/14 上午9:27
  */
 @Setter
-public class LoginServiceImpl implements LoginService {
+public class LoginServiceImpl extends AbstractService implements LoginService {
 
-    private String domain;
-    private User user;
-
-    private UrlManager urlManager = UrlManagerImpl.getInstance();
     private KeyManager keyManager = KeyManagerImpl.getInstance();
 
-    // store cookies
-    private CookieStore cookieStore = new BasicCookieStore();
-    // set auto redirect
-    private CloseableHttpClient httpClient = HttpClients.custom()
-            .disableRedirectHandling()
-            .setDefaultCookieStore(cookieStore)
-            .build();
-
-    public LoginServiceImpl(String domain, User user) {
-        if (!validateDomain(domain)) {
-            throw new RuntimeException("domain invalid");
-        }
-        this.domain = domain;
-        this.user = user;
-    }
-
     @Override
-    public LoginStatus login() throws PublicKeyException, LoginException {
+    public void login(User user) throws LoginException {
         try {
-            LoginData.CovertData covertData = sendIndex();
-            return sendLogin(covertData);
+            LoginData.CovertData covertData = sendIndex(user);
+            parse(sendLogin(covertData));
         } finally {
             try {
                 httpClient.close();
@@ -77,12 +48,7 @@ public class LoginServiceImpl implements LoginService {
         }
     }
 
-    @Override
-    public CookieStore getCookie() {
-        return cookieStore;
-    }
-
-    protected LoginData.CovertData sendIndex() throws PublicKeyException, LoginException {
+    protected LoginData.CovertData sendIndex(User user) throws LoginException {
         String password;
         LoginData loginData;
         CloseableHttpResponse response = null;
@@ -119,7 +85,7 @@ public class LoginServiceImpl implements LoginService {
         return LoginData.CovertData.buildCovertData(loginData, password);
     }
 
-    protected LoginStatus sendLogin(LoginData.CovertData covertData) throws LoginException {
+    protected HttpResponse sendLogin(LoginData.CovertData covertData) throws LoginException {
         URIBuilder uriBuilder;
         HttpPost httpPost;
 
@@ -135,40 +101,32 @@ public class LoginServiceImpl implements LoginService {
 
         httpPost.setEntity(new UrlEncodedFormEntity(covertData.getRequestEntity(), Consts.UTF_8));
 
-        try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-            return getLoginStatus(response);
+        try {
+            return httpClient.execute(httpPost);
         } catch (IOException e) {
-            e.printStackTrace();
-            return LoginStatus.error("服务异常");
+            throw new LoginException("IO error");
         }
     }
 
-    protected boolean validateDomain(String domain) {
-        String domainRule = "^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+.?$";
-        return Pattern.matches(domainRule, domain);
+    @Override
+    protected Void parse(HttpResponse response) {
+        return null;
     }
 
-    protected LoginStatus getLoginStatus(CloseableHttpResponse response) {
+    @Override
+    protected LoginStatus getLoginStatusFromResp(HttpResponse response) {
         int successStatusCode = 302;
-        String tipsId = "tips";
-        String errorClass = "bg_danger sl_danger";
 
+        /*
+         * 通过重定向状态码获取登录信息
+         */
         if (response.getStatusLine().getStatusCode() == successStatusCode) {
             return LoginStatus.success();
         }
         try {
-            Document document = Jsoup.parse(EntityUtils.toString(response.getEntity()));
-            Element element = document.getElementById(tipsId);
-            String msg = null;
-            if (element == null) {
-                Elements elements = document.getElementsByClass(errorClass);
-                if (elements != null && !elements.isEmpty()) {
-                    msg = String.join(",", elements.eachText());
-                }
-            } else {
-                msg = element.text();
-            }
-            return LoginStatus.error(msg);
+            LoginStatus loginStatus = super.getLoginStatusFromResp(response);
+            loginStatus.setSuccess(false);
+            return loginStatus;
         } catch (IOException e) {
             e.printStackTrace();
             return LoginStatus.error(null);

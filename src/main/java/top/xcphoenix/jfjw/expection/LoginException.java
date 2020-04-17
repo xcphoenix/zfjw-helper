@@ -26,4 +26,5 @@ public class LoginException extends Exception {
     protected LoginException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
+
 }

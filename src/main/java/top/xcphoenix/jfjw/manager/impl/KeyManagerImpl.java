@@ -47,24 +47,22 @@ public class KeyManagerImpl implements KeyManager {
     }
 
     @Override
-    public RSA getPublicKey(String baseUrl) throws
-            PublicKeyException {
+    public RSA getPublicKey(String baseUrl) {
         return getPublicKey(baseUrl, null, null);
     }
 
     @Override
-    public RSA getPublicKey(String url, CookieStore cookieStore) throws PublicKeyException {
+    public RSA getPublicKey(String url, CookieStore cookieStore) {
         return getPublicKey(url, null, cookieStore);
     }
 
     @Override
-    public RSA getPublicKey(String url, Map<String, String> headers) throws PublicKeyException {
+    public RSA getPublicKey(String url, Map<String, String> headers) {
         return getPublicKey(url, headers, null);
     }
 
     @Override
-    public RSA getPublicKey(String baseUrl, Map<String, String> headers, CookieStore cookieStore)
-            throws PublicKeyException {
+    public RSA getPublicKey(String baseUrl, Map<String, String> headers, CookieStore cookieStore) {
 
         String modulus;
         String exponent;
@@ -114,7 +112,7 @@ public class KeyManagerImpl implements KeyManager {
 
     @Override
     public String encryptPassword(RSA rsa, String value) {
-            return B64.hex2b64(rsa.RSAEncrypt(value));
+        return B64.hex2b64(rsa.RSAEncrypt(value));
     }
 
 }

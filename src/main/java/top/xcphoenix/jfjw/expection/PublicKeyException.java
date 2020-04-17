@@ -5,7 +5,7 @@ package top.xcphoenix.jfjw.expection;
  * @date        2020/4/14 下午4:57
  * @version     1.0
  */ 
-public class PublicKeyException extends Exception {
+public class PublicKeyException extends RuntimeException {
 
     public PublicKeyException() {
         super();

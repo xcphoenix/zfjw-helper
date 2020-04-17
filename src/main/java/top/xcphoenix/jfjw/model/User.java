@@ -15,17 +15,10 @@ public class User {
     
     private String stuCode;
     private String password;
-
-    private String name;
-
-    public User(String stuCode, String password) {
+    
+    public User(@NonNull String stuCode, @NonNull String password) {
         this.stuCode = stuCode;
         this.password = password;
     }
-
-    public static User builder(@NonNull String stuCode, @NonNull String password) {
-        return new User(stuCode, password);
-    }
-
 
 }

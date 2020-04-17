@@ -18,6 +18,7 @@ public class UrlManagerImpl implements UrlManager {
     private static final String publicKeyUrl = "/jwglxt/xtgl/login_getPublicKey.html";
     private static final String indexUrl = "/jwglxt/xtgl/login_slogin.html";
     private static final String loginUrl = "/jwglxt/xtgl/login_slogin.html";
+    private static final String userInfoApiUrl = "/jwglxt/xsxxxggl/xsxxwh_cxCkDgxsxx.html?gnmkdm=N100801";
 
     private UrlManagerImpl() {
     }
@@ -50,6 +51,10 @@ public class UrlManagerImpl implements UrlManager {
     @Override
     public URIBuilder getLoginUrl(String baseUrl) throws URISyntaxException {
         return afterDecorate(getUrl(baseUrl, loginUrl), true);
+    }
+
+    public URIBuilder getUserInfoApiUrl(String baseUrl) throws URISyntaxException {
+        return afterDecorate(getUrl(baseUrl, userInfoApiUrl), false);
     }
 
     private String getUrl(String baseUrl, String link) {
