@@ -1,7 +1,7 @@
 package top.xcphoenix.jfjw.service.core;
 
+import top.xcphoenix.jfjw.expection.LoginException;
 import top.xcphoenix.jfjw.model.UserBaseInfo;
-import top.xcphoenix.jfjw.service.Service;
 
 /**
  * 获取用户信息
@@ -10,13 +10,14 @@ import top.xcphoenix.jfjw.service.Service;
  * @date        2020/4/17 上午10:06
  * @version     1.0
  */ 
-public interface UserInfoService extends Service {
+public interface UserInfoService {
 
     /**
      * 获取用户信息
      *
      * @return 用户信息
+     * @throws LoginException 未登录
      */
-    UserBaseInfo getUserInfo();
+    UserBaseInfo getUserInfo() throws LoginException;
 
 }

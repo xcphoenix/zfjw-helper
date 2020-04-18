@@ -37,24 +37,30 @@ public class UrlManagerImpl implements UrlManager {
     }
 
     @Override
-    public URIBuilder getPublicKeyUrl(String baseUrl) throws URISyntaxException {
+    public URIBuilder getPublicKeyLink(String baseUrl) throws URISyntaxException {
         return afterDecorate(getUrl(baseUrl, publicKeyUrl), true);
     }
 
     @Override
-    public URIBuilder getIndexUrl(String baseUrl) throws URISyntaxException {
+    public URIBuilder getIndexLink(String baseUrl) throws URISyntaxException {
         return afterDecorate(getUrl(baseUrl, indexUrl), false)
                 .setParameter("_t", String.valueOf(System.currentTimeMillis()))
                 .setParameter("language", "zh_CN");
     }
 
     @Override
-    public URIBuilder getLoginUrl(String baseUrl) throws URISyntaxException {
+    public URIBuilder getLoginLink(String baseUrl) throws URISyntaxException {
         return afterDecorate(getUrl(baseUrl, loginUrl), true);
     }
 
-    public URIBuilder getUserInfoApiUrl(String baseUrl) throws URISyntaxException {
+    @Override
+    public URIBuilder getUserInfoApiLink(String baseUrl) throws URISyntaxException {
         return afterDecorate(getUrl(baseUrl, userInfoApiUrl), false);
+    }
+
+    @Override
+    public String getLoginRedirectLink() {
+        return loginUrl;
     }
 
     private String getUrl(String baseUrl, String link) {

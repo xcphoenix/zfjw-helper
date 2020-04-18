@@ -12,13 +12,14 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import top.xcphoenix.jfjw.expection.LoginException;
 import top.xcphoenix.jfjw.manager.KeyManager;
 import top.xcphoenix.jfjw.manager.impl.KeyManagerImpl;
 import top.xcphoenix.jfjw.model.LoginData;
 import top.xcphoenix.jfjw.model.LoginStatus;
 import top.xcphoenix.jfjw.model.User;
-import top.xcphoenix.jfjw.service.AbstractService;
+import top.xcphoenix.jfjw.service.BaseService;
 import top.xcphoenix.jfjw.service.core.LoginService;
 
 import java.io.IOException;
@@ -30,22 +31,14 @@ import java.net.URISyntaxException;
  * @date 2020/4/14 上午9:27
  */
 @Setter
-public class LoginServiceImpl extends AbstractService implements LoginService {
+public class LoginServiceImpl extends BaseService implements LoginService {
 
     private KeyManager keyManager = KeyManagerImpl.getInstance();
 
     @Override
-    public void login(User user) throws LoginException {
-        try {
-            LoginData.CovertData covertData = sendIndex(user);
-            parse(sendLogin(covertData));
-        } finally {
-            try {
-                httpClient.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    public LoginStatus login(User user) throws LoginException {
+        LoginData.CovertData covertData = sendIndex(user);
+        return sendLogin(covertData);
     }
 
     protected LoginData.CovertData sendIndex(User user) throws LoginException {
@@ -54,8 +47,8 @@ public class LoginServiceImpl extends AbstractService implements LoginService {
         CloseableHttpResponse response = null;
 
         try {
-            HttpGet httpGet = new HttpGet(urlManager.getIndexUrl(domain).build());
-            response = httpClient.execute(httpGet);
+            HttpGet httpGet = new HttpGet(urlManager.getIndexLink(domain).build());
+            response = httpClient.execute(httpGet, context);
 
             Document document = Jsoup.parse(EntityUtils.toString(response.getEntity()));
             Element element = document.getElementById("csrftoken");
@@ -67,7 +60,7 @@ public class LoginServiceImpl extends AbstractService implements LoginService {
 
             loginData = new LoginData(csrfToken, user);
             password = keyManager.encryptPassword(
-                    keyManager.getPublicKey(domain, cookieStore),
+                    keyManager.getPublicKey(domain, context),
                     user.getPassword()
             );
         } catch (IOException | URISyntaxException e) {
@@ -85,12 +78,12 @@ public class LoginServiceImpl extends AbstractService implements LoginService {
         return LoginData.CovertData.buildCovertData(loginData, password);
     }
 
-    protected HttpResponse sendLogin(LoginData.CovertData covertData) throws LoginException {
+    protected LoginStatus sendLogin(LoginData.CovertData covertData) throws LoginException {
         URIBuilder uriBuilder;
         HttpPost httpPost;
 
         try {
-            uriBuilder = urlManager.getLoginUrl(domain);
+            uriBuilder = urlManager.getLoginLink(domain);
             if (covertData.getUrlParams() != null) {
                 uriBuilder.setParameters(covertData.getUrlParams());
             }
@@ -101,21 +94,20 @@ public class LoginServiceImpl extends AbstractService implements LoginService {
 
         httpPost.setEntity(new UrlEncodedFormEntity(covertData.getRequestEntity(), Consts.UTF_8));
 
-        try {
-            return httpClient.execute(httpPost);
+        try (CloseableHttpResponse response = httpClient.execute(httpPost, context)) {
+            return getLoginStatusFromResp(response, EntityUtils.toString(response.getEntity()));
         } catch (IOException e) {
             throw new LoginException("IO error");
         }
     }
 
-    @Override
-    protected Void parse(HttpResponse response) {
-        return null;
-    }
-
-    @Override
-    protected LoginStatus getLoginStatusFromResp(HttpResponse response) {
+    protected LoginStatus getLoginStatusFromResp(HttpResponse response, String html) {
         int successStatusCode = 302;
+        /*
+         * error tag
+         */
+        String tipsId = "tips";
+        String errorClass = "bg_danger sl_danger";
 
         /*
          * 通过重定向状态码获取登录信息
@@ -123,14 +115,18 @@ public class LoginServiceImpl extends AbstractService implements LoginService {
         if (response.getStatusLine().getStatusCode() == successStatusCode) {
             return LoginStatus.success();
         }
-        try {
-            LoginStatus loginStatus = super.getLoginStatusFromResp(response);
-            loginStatus.setSuccess(false);
-            return loginStatus;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return LoginStatus.error(null);
+        Document document = Jsoup.parse(html);
+        Element element = document.getElementById(tipsId);
+        String msg = null;
+        if (element == null) {
+            Elements elements = document.getElementsByClass(errorClass);
+            if (elements != null && !elements.isEmpty()) {
+                msg = String.join(",", elements.eachText());
+            }
+        } else {
+            msg = element.text();
         }
+        return LoginStatus.error(msg);
     }
 
 }

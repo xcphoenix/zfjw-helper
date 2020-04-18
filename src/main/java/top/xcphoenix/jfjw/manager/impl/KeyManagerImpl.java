@@ -2,18 +2,17 @@ package top.xcphoenix.jfjw.manager.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.http.Header;
-import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import top.xcphoenix.jfjw.expection.PublicKeyException;
 import top.xcphoenix.jfjw.manager.KeyManager;
 import top.xcphoenix.jfjw.util.B64;
+import top.xcphoenix.jfjw.util.HttpClientUtils;
 import top.xcphoenix.jfjw.util.RSA;
 
 import java.io.IOException;
@@ -52,8 +51,8 @@ public class KeyManagerImpl implements KeyManager {
     }
 
     @Override
-    public RSA getPublicKey(String url, CookieStore cookieStore) {
-        return getPublicKey(url, null, cookieStore);
+    public RSA getPublicKey(String url, HttpClientContext context) {
+        return getPublicKey(url, null, context);
     }
 
     @Override
@@ -62,7 +61,7 @@ public class KeyManagerImpl implements KeyManager {
     }
 
     @Override
-    public RSA getPublicKey(String baseUrl, Map<String, String> headers, CookieStore cookieStore) {
+    public RSA getPublicKey(String baseUrl, Map<String, String> headers, HttpClientContext context) {
 
         String modulus;
         String exponent;
@@ -71,7 +70,7 @@ public class KeyManagerImpl implements KeyManager {
         HttpGet httpGet;
 
         try {
-            uriBuilder = UrlManagerImpl.getInstance().getPublicKeyUrl(baseUrl);
+            uriBuilder = UrlManagerImpl.getInstance().getPublicKeyLink(baseUrl);
             httpGet = new HttpGet(uriBuilder.build());
             if (headers != null && !headers.isEmpty()) {
                 httpGet.setHeaders(
@@ -85,12 +84,10 @@ public class KeyManagerImpl implements KeyManager {
                     (uriBuilder != null ? uriBuilder.toString() : "null"), e);
         }
 
-        HttpClientBuilder builder = HttpClients.custom();
-        CloseableHttpClient httpClient = cookieStore == null ? builder.build() :
-                builder.setDefaultCookieStore(cookieStore).build();
+        CloseableHttpClient httpClient = HttpClientUtils.getHttpClient();
         CloseableHttpResponse response = null;
         try {
-            response = httpClient.execute(httpGet);
+            response = httpClient.execute(httpGet, context);
             JSONObject jsonObject = JSONObject.parseObject(EntityUtils.toString(response.getEntity()));
             modulus = B64.b64ToHex(jsonObject.getString(MODULUS));
             exponent = B64.b64ToHex(jsonObject.getString(EXPONENT));
@@ -101,7 +98,6 @@ public class KeyManagerImpl implements KeyManager {
                 if (response != null) {
                     response.close();
                 }
-                httpClient.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

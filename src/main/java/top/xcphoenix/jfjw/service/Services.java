@@ -6,6 +6,8 @@ import top.xcphoenix.jfjw.global.Config;
 import java.lang.reflect.Modifier;
 
 /**
+ * TODO AOP 处理服务
+ *
  * 配合config创建内置服务
  *
  * @author      xuanc
@@ -22,22 +24,22 @@ public class Services {
      */
     @SuppressWarnings({"unchecked"})
     public static <T> T create(Class<T> clazz) {
-        if (!AbstractService.class.isAssignableFrom(clazz) ||
+        if (!BaseService.class.isAssignableFrom(clazz) ||
                 Modifier.isAbstract(clazz.getModifiers())) {
             throw new ServiceException("class is invalid");
         }
-        AbstractService abstractService;
+        BaseService baseService;
         Config config = Config.getGlobalConfig();
         if (config == null) {
             throw new ServiceException("global config isn't be define");
         }
         try {
-            abstractService = (AbstractService) clazz.newInstance();
+            baseService = (BaseService) clazz.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new ServiceException("class can't be create by default constructor");
         }
-        abstractService.init(config.getDomain(), config.getCookieStore());
-        return (T) abstractService;
+        baseService.init(config.getDomain(), config.getCookieStore());
+        return (T) baseService;
     }
 
     /**
@@ -48,18 +50,18 @@ public class Services {
      */
     @SuppressWarnings({"unchecked"})
     public static <T> T create(Class<T> clazz, Config config) {
-        if (!AbstractService.class.isAssignableFrom(clazz) ||
+        if (!BaseService.class.isAssignableFrom(clazz) ||
                 Modifier.isAbstract(clazz.getModifiers())) {
             throw new ServiceException("class is invalid");
         }
-        AbstractService abstractService;
+        BaseService baseService;
         try {
-            abstractService = (AbstractService) clazz.newInstance();
+            baseService = (BaseService) clazz.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new ServiceException("class can't be create by default constructor");
         }
-        abstractService.init(config.getDomain(), config.getCookieStore());
-        return (T) abstractService;
+        baseService.init(config.getDomain(), config.getCookieStore());
+        return (T) baseService;
     }
 
 }

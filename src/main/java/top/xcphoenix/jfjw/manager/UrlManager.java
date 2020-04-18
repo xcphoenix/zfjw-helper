@@ -11,9 +11,47 @@ import java.net.URISyntaxException;
  */
 public interface UrlManager {
 
-    public URIBuilder getPublicKeyUrl(String baseUrl) throws URISyntaxException;
+    /**
+     * 获取重定向url
+     *
+     * @return 登录地址
+     */
+    String getLoginRedirectLink();
 
-    public URIBuilder getIndexUrl(String baseUrl) throws URISyntaxException;
+    /**
+     * 获取公钥uri
+     *
+     * @param baseUrl 域名
+     * @return uri
+     * @throws URISyntaxException url语法错误（无效的域名）
+     */
+    URIBuilder getPublicKeyLink(String baseUrl) throws URISyntaxException;
 
-    URIBuilder getLoginUrl(String baseUrl) throws URISyntaxException;
+    /**
+     * 获取首页url
+     *
+     * @param baseUrl 域名
+     * @return url
+     * @throws URISyntaxException url语法错误（无效的域名）
+     */
+    URIBuilder getIndexLink(String baseUrl) throws URISyntaxException;
+
+    /**
+     * 获取登录url
+     *
+     * @param baseUrl 域名
+     * @return url
+     * @throws URISyntaxException url语法错误（无效的域名）
+     */
+    URIBuilder getLoginLink(String baseUrl) throws URISyntaxException;
+
+    /**
+     * 获取用户信息url
+     *
+     * @param baseUrl 域名
+     * @return url
+     * @throws URISyntaxException url语法错误（无效的域名）
+     */
+    URIBuilder getUserInfoApiLink(String baseUrl) throws URISyntaxException;
+
 }
