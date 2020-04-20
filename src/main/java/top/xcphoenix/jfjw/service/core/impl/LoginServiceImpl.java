@@ -16,9 +16,9 @@ import org.jsoup.select.Elements;
 import top.xcphoenix.jfjw.expection.LoginException;
 import top.xcphoenix.jfjw.manager.KeyManager;
 import top.xcphoenix.jfjw.manager.impl.KeyManagerImpl;
-import top.xcphoenix.jfjw.model.LoginData;
-import top.xcphoenix.jfjw.model.LoginStatus;
-import top.xcphoenix.jfjw.model.User;
+import top.xcphoenix.jfjw.model.login.LoginData;
+import top.xcphoenix.jfjw.model.login.LoginStatus;
+import top.xcphoenix.jfjw.model.user.User;
 import top.xcphoenix.jfjw.service.BaseService;
 import top.xcphoenix.jfjw.service.core.LoginService;
 

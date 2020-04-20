@@ -7,10 +7,6 @@ package top.xcphoenix.jfjw.expection;
  */ 
 public class ConfigException extends Exception {
 
-    public ConfigException() {
-        super();
-    }
-
     public ConfigException(String message) {
         super(message);
     }
@@ -19,11 +15,4 @@ public class ConfigException extends Exception {
         super(message, cause);
     }
 
-    public ConfigException(Throwable cause) {
-        super(cause);
-    }
-
-    protected ConfigException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }

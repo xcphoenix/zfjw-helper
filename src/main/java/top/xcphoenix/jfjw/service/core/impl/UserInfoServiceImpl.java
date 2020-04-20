@@ -8,8 +8,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.util.EntityUtils;
 import top.xcphoenix.jfjw.expection.LoginException;
+import top.xcphoenix.jfjw.expection.NotLoggedInException;
 import top.xcphoenix.jfjw.expection.ServiceException;
-import top.xcphoenix.jfjw.model.UserBaseInfo;
+import top.xcphoenix.jfjw.model.user.UserBaseInfo;
 import top.xcphoenix.jfjw.service.BaseService;
 import top.xcphoenix.jfjw.service.core.UserInfoService;
 
@@ -24,7 +25,7 @@ import java.net.URISyntaxException;
 public class UserInfoServiceImpl extends BaseService implements UserInfoService {
 
     @Override
-    public UserBaseInfo getUserInfo() throws LoginException, ServiceException {
+    public UserBaseInfo getUserInfo() throws NotLoggedInException, ServiceException {
         URIBuilder uriBuilder;
         HttpGet httpGet;
 
@@ -41,9 +42,9 @@ public class UserInfoServiceImpl extends BaseService implements UserInfoService 
         }
     }
 
-    private UserBaseInfo dealResp(CloseableHttpResponse response) throws LoginException {
+    private UserBaseInfo dealResp(CloseableHttpResponse response) throws NotLoggedInException {
         if (super.isNeedLogin(response)) {
-            throw new LoginException("need login");
+            throw new NotLoggedInException("need login");
         }
 
         String html;

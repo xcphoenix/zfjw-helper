@@ -1,7 +1,7 @@
 package top.xcphoenix.jfjw.service.core;
 
-import top.xcphoenix.jfjw.expection.LoginException;
-import top.xcphoenix.jfjw.model.UserBaseInfo;
+import top.xcphoenix.jfjw.expection.NotLoggedInException;
+import top.xcphoenix.jfjw.model.user.UserBaseInfo;
 
 /**
  * 获取用户信息
@@ -16,8 +16,8 @@ public interface UserInfoService {
      * 获取用户信息
      *
      * @return 用户信息
-     * @throws LoginException 未登录
+     * @throws NotLoggedInException 未登录
      */
-    UserBaseInfo getUserInfo() throws LoginException;
+    UserBaseInfo getUserInfo() throws NotLoggedInException;
 
 }

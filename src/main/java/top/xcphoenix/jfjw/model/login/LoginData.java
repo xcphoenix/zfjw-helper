@@ -1,12 +1,11 @@
-package top.xcphoenix.jfjw.model;
+package top.xcphoenix.jfjw.model.login;
 
 import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import top.xcphoenix.jfjw.model.user.User;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 

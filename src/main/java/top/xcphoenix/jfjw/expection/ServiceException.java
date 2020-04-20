@@ -7,10 +7,6 @@ package top.xcphoenix.jfjw.expection;
  */ 
 public class ServiceException extends RuntimeException {
 
-    public ServiceException() {
-        super();
-    }
-
     public ServiceException(String message) {
         super(message);
     }
@@ -19,11 +15,4 @@ public class ServiceException extends RuntimeException {
         super(message, cause);
     }
 
-    public ServiceException(Throwable cause) {
-        super(cause);
-    }
-
-    protected ServiceException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }

@@ -1,7 +1,7 @@
 package top.xcphoenix.jfjw.service;
 
 import top.xcphoenix.jfjw.expection.ServiceException;
-import top.xcphoenix.jfjw.global.Config;
+import top.xcphoenix.jfjw.config.ServiceConfig;
 
 import java.lang.reflect.Modifier;
 
@@ -29,16 +29,16 @@ public class Services {
             throw new ServiceException("class is invalid");
         }
         BaseService baseService;
-        Config config = Config.getGlobalConfig();
-        if (config == null) {
-            throw new ServiceException("global config isn't be define");
+        ServiceConfig serviceConfig = ServiceConfig.getGlobalServiceConfig();
+        if (serviceConfig == null) {
+            throw new ServiceException("config serviceConfig isn't be define");
         }
         try {
             baseService = (BaseService) clazz.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new ServiceException("class can't be create by default constructor");
         }
-        baseService.init(config.getDomain(), config.getCookieStore());
+        baseService.init(serviceConfig.getDomain(), serviceConfig.getCookieStore());
         return (T) baseService;
     }
 
@@ -49,7 +49,7 @@ public class Services {
      * @return 服务
      */
     @SuppressWarnings({"unchecked"})
-    public static <T> T create(Class<T> clazz, Config config) {
+    public static <T> T create(Class<T> clazz, ServiceConfig serviceConfig) {
         if (!BaseService.class.isAssignableFrom(clazz) ||
                 Modifier.isAbstract(clazz.getModifiers())) {
             throw new ServiceException("class is invalid");
@@ -60,7 +60,7 @@ public class Services {
         } catch (InstantiationException | IllegalAccessException e) {
             throw new ServiceException("class can't be create by default constructor");
         }
-        baseService.init(config.getDomain(), config.getCookieStore());
+        baseService.init(serviceConfig.getDomain(), serviceConfig.getCookieStore());
         return (T) baseService;
     }
 

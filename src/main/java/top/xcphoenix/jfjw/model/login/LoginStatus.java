@@ -1,4 +1,4 @@
-package top.xcphoenix.jfjw.model;
+package top.xcphoenix.jfjw.model.login;
 
 import lombok.Getter;
 import lombok.Setter;

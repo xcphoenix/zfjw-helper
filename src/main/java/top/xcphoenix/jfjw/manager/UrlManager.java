@@ -54,4 +54,14 @@ public interface UrlManager {
      */
     URIBuilder getUserInfoApiLink(String baseUrl) throws URISyntaxException;
 
+    /**
+     * 获取课表信息url
+     *
+     * @param baseUrl 域名
+     * @return url
+     * @throws URISyntaxException url语法错误（无效的域名）
+     */
+    URIBuilder getClassTableApiLink(String baseUrl) throws URISyntaxException;
+
+    URIBuilder getClassTableSimplePage(String baseUrl) throws URISyntaxException;
 }

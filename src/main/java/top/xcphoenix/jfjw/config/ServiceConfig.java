@@ -1,14 +1,11 @@
-package top.xcphoenix.jfjw.global;
+package top.xcphoenix.jfjw.config;
 
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.http.client.CookieStore;
 import org.apache.http.impl.client.BasicCookieStore;
 import top.xcphoenix.jfjw.expection.ConfigException;
-
-import java.util.List;
 
 /**
  * 全局配置信息
@@ -19,22 +16,22 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class Config {
+public class ServiceConfig {
 
     /**
      * 全局配置
      */
-    private static Config globalConfig;
+    private static ServiceConfig globalServiceConfig;
 
     private String domain;
     private CookieStore cookieStore;
 
-    public Config(String domain) {
+    public ServiceConfig(String domain) {
         this.domain = domain;
         this.cookieStore = new BasicCookieStore();
     }
 
-    public Config(String domain, CookieStore cookieStore) {
+    public ServiceConfig(String domain, CookieStore cookieStore) {
         if (cookieStore == null) {
             cookieStore = new BasicCookieStore();
         }
@@ -50,15 +47,15 @@ public class Config {
      * @return config
      * @throws ConfigException 若全局配置非空时，抛出异常
      */
-    public static Config buildGlobal(String domain, boolean global) throws ConfigException {
-        Config config = new Config(domain, new BasicCookieStore());
+    public static ServiceConfig buildGlobal(String domain, boolean global) throws ConfigException {
+        ServiceConfig serviceConfig = new ServiceConfig(domain, new BasicCookieStore());
         if (global) {
-            if (globalConfig != null) {
-                throw new ConfigException("global config not empty, danger operation");
+            if (globalServiceConfig != null) {
+                throw new ConfigException("config serviceConfig not empty, danger operation");
             }
-            globalConfig = config;
+            globalServiceConfig = serviceConfig;
         }
-        return config;
+        return serviceConfig;
     }
 
     /**
@@ -70,15 +67,15 @@ public class Config {
      * @return config
      * @throws ConfigException 若全局配置非空时，抛出异常
      */
-    public Config buildGlobal(String domain, CookieStore cookieStore, boolean global) throws ConfigException {
-        Config config = new Config(domain, cookieStore);
+    public ServiceConfig buildGlobal(String domain, CookieStore cookieStore, boolean global) throws ConfigException {
+        ServiceConfig serviceConfig = new ServiceConfig(domain, cookieStore);
         if (global) {
-            if (globalConfig != null) {
-                throw new ConfigException("global config not empty, danger operation");
+            if (globalServiceConfig != null) {
+                throw new ConfigException("config serviceConfig not empty, danger operation");
             }
-            globalConfig = config;
+            globalServiceConfig = serviceConfig;
         }
-        return config;
+        return serviceConfig;
     }
 
     /**
@@ -86,15 +83,15 @@ public class Config {
      *
      * @return 全局配置
      */
-    public static Config getGlobalConfig() {
-        return globalConfig;
+    public static ServiceConfig getGlobalServiceConfig() {
+        return globalServiceConfig;
     }
 
     /**
-     * clean global config
+     * clean config config
      */
     public static void clean() {
-        globalConfig = null;
+        globalServiceConfig = null;
     }
 
 }

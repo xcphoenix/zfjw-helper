@@ -1,8 +1,8 @@
 package top.xcphoenix.jfjw.service.core;
 
 import top.xcphoenix.jfjw.expection.LoginException;
-import top.xcphoenix.jfjw.model.LoginStatus;
-import top.xcphoenix.jfjw.model.User;
+import top.xcphoenix.jfjw.model.login.LoginStatus;
+import top.xcphoenix.jfjw.model.user.User;
 
 
 /**
