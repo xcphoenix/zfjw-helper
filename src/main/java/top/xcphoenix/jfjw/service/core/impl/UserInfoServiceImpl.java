@@ -43,13 +43,9 @@ public class UserInfoServiceImpl extends BaseService implements UserInfoService 
     }
 
     private UserBaseInfo dealResp(CloseableHttpResponse response) throws NotLoggedInException {
-        if (super.isNeedLogin(response)) {
-            throw new NotLoggedInException("need login");
-        }
-
         String html;
         try {
-            html = EntityUtils.toString(response.getEntity());
+            html = super.getResp(response);
         } catch (IOException e) {
             throw new ServiceException("io error", e);
         }

@@ -8,7 +8,7 @@ import top.xcphoenix.jfjw.model.course.Course;
 import top.xcphoenix.jfjw.model.login.LoginStatus;
 import top.xcphoenix.jfjw.model.user.User;
 import top.xcphoenix.jfjw.model.user.UserBaseInfo;
-import top.xcphoenix.jfjw.service.Services;
+import top.xcphoenix.jfjw.service.ServiceBuilder;
 import top.xcphoenix.jfjw.service.core.LoginService;
 import top.xcphoenix.jfjw.service.core.impl.ClassTableServiceImpl;
 import top.xcphoenix.jfjw.service.core.impl.LoginServiceImpl;
@@ -16,7 +16,6 @@ import top.xcphoenix.jfjw.service.core.impl.UserInfoServiceImpl;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -42,18 +41,17 @@ public class DemoTest {
     @Test
     void demo() throws ConfigException, LoginException, URISyntaxException {
         User user = new User(code, password);
-        ServiceConfig.buildGlobal("www.zfjw.xupt.edu.cn/", true);
-        LoginService service = Services.create(LoginServiceImpl.class);
+        ServiceConfig.buildGlobal("www.zfjw.xupt.edu.cn/");
+        LoginService service = ServiceBuilder.create(LoginServiceImpl.class);
         LoginStatus status = service.login(user);
         if (status.isSuccess()) {
-            // try {
-            //     UserBaseInfo userBaseInfo = Services.create(UserInfoServiceImpl.class)
-            //             .getUserInfo();
-            //     log.info(userBaseInfo);
-            // } catch (LoginException e) {
-            //     log.warn("未登录！");
-            // }
-            List<Course> list = Services.create(ClassTableServiceImpl.class)
+            // user info
+            UserBaseInfo userBaseInfo = ServiceBuilder.create(UserInfoServiceImpl.class)
+                    .getUserInfo();
+            log.info(userBaseInfo);
+
+            // course list
+            List<Course> list = ServiceBuilder.create(ClassTableServiceImpl.class)
                     .getCourses(2018, 1);
             log.info(list);
         } else {

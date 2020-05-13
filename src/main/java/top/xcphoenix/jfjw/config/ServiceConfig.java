@@ -10,9 +10,9 @@ import top.xcphoenix.jfjw.expection.ConfigException;
 /**
  * 全局配置信息
  *
- * @author      xuanc
- * @date        2020/4/17 上午10:26
- * @version     1.0
+ * @author xuanc
+ * @version 1.0
+ * @date 2020/4/17 上午10:26
  */
 @Getter
 @Setter
@@ -43,38 +43,32 @@ public class ServiceConfig {
      * init config
      *
      * @param domain 域名
-     * @param global 是否设置为全局配置
      * @return config
      * @throws ConfigException 若全局配置非空时，抛出异常
      */
-    public static ServiceConfig buildGlobal(String domain, boolean global) throws ConfigException {
+    public static ServiceConfig buildGlobal(String domain) throws ConfigException {
         ServiceConfig serviceConfig = new ServiceConfig(domain, new BasicCookieStore());
-        if (global) {
-            if (globalServiceConfig != null) {
-                throw new ConfigException("config serviceConfig not empty, danger operation");
-            }
-            globalServiceConfig = serviceConfig;
+        if (globalServiceConfig != null) {
+            throw new ConfigException("config serviceConfig not empty, danger operation");
         }
+        globalServiceConfig = serviceConfig;
         return serviceConfig;
     }
 
     /**
      * init config
      *
-     * @param domain 域名
-     * @param global 是否设置为全局配置
+     * @param domain      域名
      * @param cookieStore cookie存储
      * @return config
      * @throws ConfigException 若全局配置非空时，抛出异常
      */
-    public ServiceConfig buildGlobal(String domain, CookieStore cookieStore, boolean global) throws ConfigException {
+    public ServiceConfig buildGlobal(String domain, CookieStore cookieStore) throws ConfigException {
         ServiceConfig serviceConfig = new ServiceConfig(domain, cookieStore);
-        if (global) {
-            if (globalServiceConfig != null) {
-                throw new ConfigException("config serviceConfig not empty, danger operation");
-            }
-            globalServiceConfig = serviceConfig;
+        if (globalServiceConfig != null) {
+            throw new ConfigException("config serviceConfig not empty, danger operation");
         }
+        globalServiceConfig = serviceConfig;
         return serviceConfig;
     }
 

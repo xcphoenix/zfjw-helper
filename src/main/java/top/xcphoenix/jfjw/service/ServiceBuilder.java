@@ -1,20 +1,25 @@
 package top.xcphoenix.jfjw.service;
 
-import top.xcphoenix.jfjw.expection.ServiceException;
 import top.xcphoenix.jfjw.config.ServiceConfig;
+import top.xcphoenix.jfjw.expection.ServiceException;
 
 import java.lang.reflect.Modifier;
 
 /**
- * TODO AOP 处理服务
  *
  * 配合config创建内置服务
  *
  * @author      xuanc
  * @date        2020/4/17 上午10:48
  * @version     1.0
- */ 
-public class Services {
+ */
+public class ServiceBuilder {
+
+    private final ServiceConfig config;
+
+    public ServiceBuilder(ServiceConfig config) {
+        this.config = config;
+    }
 
     /**
      * 使用全局配置创建服务
@@ -38,8 +43,7 @@ public class Services {
         } catch (InstantiationException | IllegalAccessException e) {
             throw new ServiceException("class can't be create by default constructor");
         }
-        baseService.init(serviceConfig.getDomain(), serviceConfig.getCookieStore());
-        return (T) baseService;
+        return (T) baseService.init(serviceConfig);
     }
 
     /**
@@ -49,7 +53,7 @@ public class Services {
      * @return 服务
      */
     @SuppressWarnings({"unchecked"})
-    public static <T> T create(Class<T> clazz, ServiceConfig serviceConfig) {
+    public <T> T build(Class<T> clazz) {
         if (!BaseService.class.isAssignableFrom(clazz) ||
                 Modifier.isAbstract(clazz.getModifiers())) {
             throw new ServiceException("class is invalid");
@@ -60,8 +64,7 @@ public class Services {
         } catch (InstantiationException | IllegalAccessException e) {
             throw new ServiceException("class can't be create by default constructor");
         }
-        baseService.init(serviceConfig.getDomain(), serviceConfig.getCookieStore());
-        return (T) baseService;
+        return (T) baseService.init(config);
     }
 
 }

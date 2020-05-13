@@ -9,20 +9,16 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import top.xcphoenix.jfjw.config.CourseConfig;
 import top.xcphoenix.jfjw.expection.NotLoggedInException;
 import top.xcphoenix.jfjw.expection.ServiceException;
-import top.xcphoenix.jfjw.model.course.ClassTable;
 import top.xcphoenix.jfjw.model.course.Course;
 import top.xcphoenix.jfjw.model.course.CourseTpMeta;
 import top.xcphoenix.jfjw.service.BaseService;
 import top.xcphoenix.jfjw.service.core.ClassTableService;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.DayOfWeek;
@@ -44,7 +40,6 @@ import static org.apache.http.Consts.UTF_8;
 public class ClassTableServiceImpl extends BaseService implements ClassTableService {
 
     private static Map<Integer, Integer> periodMap = new HashMap<>(2);
-
     static {
         periodMap.put(1, 3);
         periodMap.put(2, 12);
@@ -69,16 +64,6 @@ public class ClassTableServiceImpl extends BaseService implements ClassTableServ
         }
     }
 
-    @Override
-    public ClassTable convert(List<Course> courses) {
-        return null;
-    }
-
-    @Override
-    public void exportCsv(File file, ClassTable table, CourseConfig courseConfig) {
-
-    }
-
     public static void setPeriodMap(Map<Integer, Integer> periodMap) {
         ClassTableServiceImpl.periodMap = periodMap;
     }
@@ -101,19 +86,18 @@ public class ClassTableServiceImpl extends BaseService implements ClassTableServ
     }
 
     private List<Course> dealWithResp(CloseableHttpResponse response) throws NotLoggedInException {
-        if (super.isNeedLogin(response)) {
-            throw new NotLoggedInException("need login");
+        String page;
+        try {
+            page = super.getResp(response);
+        } catch (IOException ioException) {
+            throw new ServiceException("io error", ioException);
         }
 
         JSONArray courseArray;
         Map<String, Course> idMapCourse = new HashMap<>();
 
-        try {
-            courseArray = JSON.parseObject(EntityUtils.toString(response.getEntity()))
-                    .getJSONArray("kbList");
-        } catch (IOException e) {
-            throw new ServiceException("io error");
-        }
+        courseArray = JSON.parseObject(page)
+                .getJSONArray("kbList");
 
         if (courseArray == null) {
             throw new ServiceException("classTable not found");
@@ -206,11 +190,9 @@ public class ClassTableServiceImpl extends BaseService implements ClassTableServ
             throw new ServiceException("get classTable simple page url is invalid");
         }
         try (CloseableHttpResponse response = httpClient.execute(httpGet, context)) {
-            if (super.isNeedLogin(response)) {
-                throw new NotLoggedInException("need login");
-            }
+            String page = super.getResp(response);
 
-            Document document = Jsoup.parse(EntityUtils.toString(response.getEntity()));
+            Document document = Jsoup.parse(page);
 
             Elements elements = document.getElementById(yearId).getElementsByTag("option");
             res[0] = Integer.parseInt(
@@ -227,7 +209,7 @@ public class ClassTableServiceImpl extends BaseService implements ClassTableServ
             );
 
         } catch (IOException e) {
-            throw new ServiceException("io error");
+            throw new ServiceException("io error", e);
         }
         return res;
     }

@@ -23,7 +23,6 @@ public class CourseTpMeta {
     private int startPeriod;
     private int endPeriod;
 
-    /** build from <code>CourseConfig</code> */
     private LocalTime startTime;
     private LocalTime endTime;
 

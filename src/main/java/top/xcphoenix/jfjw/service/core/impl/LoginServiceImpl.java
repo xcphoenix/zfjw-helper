@@ -2,7 +2,7 @@ package top.xcphoenix.jfjw.service.core.impl;
 
 import lombok.Setter;
 import org.apache.http.Consts;
-import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -12,8 +12,9 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import top.xcphoenix.jfjw.expection.LoginException;
+import top.xcphoenix.jfjw.expection.NotLoggedInException;
+import top.xcphoenix.jfjw.expection.ServiceException;
 import top.xcphoenix.jfjw.manager.KeyManager;
 import top.xcphoenix.jfjw.manager.impl.KeyManagerImpl;
 import top.xcphoenix.jfjw.model.login.LoginData;
@@ -95,38 +96,26 @@ public class LoginServiceImpl extends BaseService implements LoginService {
         httpPost.setEntity(new UrlEncodedFormEntity(covertData.getRequestEntity(), Consts.UTF_8));
 
         try (CloseableHttpResponse response = httpClient.execute(httpPost, context)) {
-            return getLoginStatusFromResp(response, EntityUtils.toString(response.getEntity()));
+            return getLoginStatusFromResp(response);
         } catch (IOException e) {
             throw new LoginException("IO error");
         }
     }
 
-    protected LoginStatus getLoginStatusFromResp(HttpResponse response, String html) {
-        int successStatusCode = 302;
-        /*
-         * error tag
-         */
-        String tipsId = "tips";
-        String errorClass = "bg_danger sl_danger";
+    private LoginStatus getLoginStatusFromResp(CloseableHttpResponse response) {
+        try {
+            getResp(response);
+        } catch (IOException ioException) {
+            throw new ServiceException("io error", ioException);
+        } catch (NotLoggedInException e) {
+            return e.getStatus();
+        }
+        return LoginStatus.success();
+    }
 
-        /*
-         * 通过重定向状态码获取登录信息
-         */
-        if (response.getStatusLine().getStatusCode() == successStatusCode) {
-            return LoginStatus.success();
-        }
-        Document document = Jsoup.parse(html);
-        Element element = document.getElementById(tipsId);
-        String msg = null;
-        if (element == null) {
-            Elements elements = document.getElementsByClass(errorClass);
-            if (elements != null && !elements.isEmpty()) {
-                msg = String.join(",", elements.eachText());
-            }
-        } else {
-            msg = element.text();
-        }
-        return LoginStatus.error(msg);
+    @Override
+    protected boolean isNeedLogin(CloseableHttpResponse response) {
+        return response.getStatusLine().getStatusCode() != HttpStatus.SC_MOVED_TEMPORARILY;
     }
 
 }
