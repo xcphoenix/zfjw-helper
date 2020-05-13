@@ -39,7 +39,7 @@ public class DemoTest {
     }
 
     @Test
-    void demo() throws ConfigException, LoginException, URISyntaxException {
+    void demo() throws ConfigException, LoginException {
         User user = new User(code, password);
         ServiceConfig.buildGlobal("www.zfjw.xupt.edu.cn/");
         LoginService service = ServiceBuilder.create(LoginServiceImpl.class);
