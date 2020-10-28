@@ -2,7 +2,7 @@ package top.xcphoenix.jfjw.manager;
 
 import org.apache.http.client.protocol.HttpClientContext;
 import top.xcphoenix.jfjw.expection.PublicKeyException;
-import top.xcphoenix.jfjw.util.RSA;
+import top.xcphoenix.jfjw.util.RsaUtil;
 
 import java.util.Map;
 
@@ -17,17 +17,17 @@ public interface KeyManager {
     /**
      * @see #getPublicKey(String, Map, HttpClientContext)
      */
-    RSA getPublicKey(String url);
+    RsaUtil getPublicKey(String url);
 
     /**
      * @see #getPublicKey(String, Map, HttpClientContext)
      */
-    RSA getPublicKey(String url, HttpClientContext context);
+    RsaUtil getPublicKey(String url, HttpClientContext context);
 
     /**
      * @see #getPublicKey(String, Map, HttpClientContext)
      */
-    RSA getPublicKey(String url, Map<String, String> headers);
+    RsaUtil getPublicKey(String url, Map<String, String> headers);
 
     /**
      * 获取公钥
@@ -38,15 +38,15 @@ public interface KeyManager {
      * @return 公钥
      * @throws PublicKeyException 获取异常
      */
-    RSA getPublicKey(String baseUrl, Map<String, String> headers, HttpClientContext context);
+    RsaUtil getPublicKey(String baseUrl, Map<String, String> headers, HttpClientContext context);
 
     /**
      * 使用公钥加密
      *
-     * @param rsa RSA
+     * @param rsaUtil RSA
      * @param value 要加密的信息
      * @return 加密后的信息
      */
-    String encryptPassword(RSA rsa, String value);
+    String encryptPassword(RsaUtil rsaUtil, String value);
 
 }

@@ -5,7 +5,7 @@ package top.xcphoenix.jfjw.expection;
  * @date        2020/4/17 上午10:36
  * @version     1.0
  */ 
-public class ConfigException extends Exception {
+public class ConfigException extends RuntimeException {
 
     public ConfigException(String message) {
         super(message);

@@ -1,6 +1,5 @@
 package top.xcphoenix.jfjw.config;
 
-
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.http.client.CookieStore;
@@ -21,7 +20,7 @@ public class ServiceConfig {
     /**
      * 全局配置
      */
-    private static ServiceConfig globalServiceConfig;
+    private static ServiceConfig globalConfig;
 
     private String domain;
     private CookieStore cookieStore;
@@ -31,45 +30,17 @@ public class ServiceConfig {
         this.cookieStore = new BasicCookieStore();
     }
 
-    public ServiceConfig(String domain, CookieStore cookieStore) {
-        if (cookieStore == null) {
-            cookieStore = new BasicCookieStore();
-        }
-        this.domain = domain;
-        this.cookieStore = cookieStore;
-    }
-
-    /**
-     * init config
-     *
-     * @param domain 域名
-     * @return config
-     * @throws ConfigException 若全局配置非空时，抛出异常
-     */
-    public static ServiceConfig buildGlobal(String domain) throws ConfigException {
-        ServiceConfig serviceConfig = new ServiceConfig(domain, new BasicCookieStore());
-        if (globalServiceConfig != null) {
-            throw new ConfigException("config serviceConfig not empty, danger operation");
-        }
-        globalServiceConfig = serviceConfig;
-        return serviceConfig;
-    }
-
     /**
      * init config
      *
      * @param domain      域名
-     * @param cookieStore cookie存储
-     * @return config
      * @throws ConfigException 若全局配置非空时，抛出异常
      */
-    public ServiceConfig buildGlobal(String domain, CookieStore cookieStore) throws ConfigException {
-        ServiceConfig serviceConfig = new ServiceConfig(domain, cookieStore);
-        if (globalServiceConfig != null) {
+    public static void buildGlobal(String domain) throws ConfigException {
+        if (globalConfig != null) {
             throw new ConfigException("config serviceConfig not empty, danger operation");
         }
-        globalServiceConfig = serviceConfig;
-        return serviceConfig;
+        globalConfig = new ServiceConfig(domain);
     }
 
     /**
@@ -77,15 +48,15 @@ public class ServiceConfig {
      *
      * @return 全局配置
      */
-    public static ServiceConfig getGlobalServiceConfig() {
-        return globalServiceConfig;
+    public static ServiceConfig getGlobalConfig() {
+        return globalConfig;
     }
 
     /**
      * clean config config
      */
     public static void clean() {
-        globalServiceConfig = null;
+        globalConfig = null;
     }
 
 }

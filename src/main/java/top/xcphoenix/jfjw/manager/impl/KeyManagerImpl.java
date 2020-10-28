@@ -11,9 +11,9 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import top.xcphoenix.jfjw.expection.PublicKeyException;
 import top.xcphoenix.jfjw.manager.KeyManager;
-import top.xcphoenix.jfjw.util.B64;
+import top.xcphoenix.jfjw.util.B64Util;
 import top.xcphoenix.jfjw.util.HttpClientUtils;
-import top.xcphoenix.jfjw.util.RSA;
+import top.xcphoenix.jfjw.util.RsaUtil;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -46,22 +46,22 @@ public class KeyManagerImpl implements KeyManager {
     }
 
     @Override
-    public RSA getPublicKey(String baseUrl) {
+    public RsaUtil getPublicKey(String baseUrl) {
         return getPublicKey(baseUrl, null, null);
     }
 
     @Override
-    public RSA getPublicKey(String url, HttpClientContext context) {
+    public RsaUtil getPublicKey(String url, HttpClientContext context) {
         return getPublicKey(url, null, context);
     }
 
     @Override
-    public RSA getPublicKey(String url, Map<String, String> headers) {
+    public RsaUtil getPublicKey(String url, Map<String, String> headers) {
         return getPublicKey(url, headers, null);
     }
 
     @Override
-    public RSA getPublicKey(String baseUrl, Map<String, String> headers, HttpClientContext context) {
+    public RsaUtil getPublicKey(String baseUrl, Map<String, String> headers, HttpClientContext context) {
 
         String modulus;
         String exponent;
@@ -89,8 +89,8 @@ public class KeyManagerImpl implements KeyManager {
         try {
             response = httpClient.execute(httpGet, context);
             JSONObject jsonObject = JSONObject.parseObject(EntityUtils.toString(response.getEntity()));
-            modulus = B64.b64ToHex(jsonObject.getString(MODULUS));
-            exponent = B64.b64ToHex(jsonObject.getString(EXPONENT));
+            modulus = B64Util.b64ToHex(jsonObject.getString(MODULUS));
+            exponent = B64Util.b64ToHex(jsonObject.getString(EXPONENT));
         } catch (IOException e) {
             throw new PublicKeyException("IO error happened on get publicKeyUrl processor: url: " + uriBuilder.toString(), e);
         } finally {
@@ -103,12 +103,12 @@ public class KeyManagerImpl implements KeyManager {
             }
         }
 
-        return new RSA(modulus, exponent);
+        return new RsaUtil(modulus, exponent);
     }
 
     @Override
-    public String encryptPassword(RSA rsa, String value) {
-        return B64.hex2b64(rsa.RSAEncrypt(value));
+    public String encryptPassword(RsaUtil rsaUtil, String value) {
+        return B64Util.hex2b64(rsaUtil.rsaEncrypt(value));
     }
 
 }

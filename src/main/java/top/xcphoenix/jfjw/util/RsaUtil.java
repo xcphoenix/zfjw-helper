@@ -11,27 +11,28 @@ import java.util.Random;
  * @version 1.0
  * @date 2020/4/15 下午6:19
  */
-public class RSA {
+public class RsaUtil {
 
-    private BigInteger n = null;
-    private BigInteger e = null;
+    private BigInteger n;
+    private BigInteger e;
 
-    public RSA(String n, String e) {
+    public RsaUtil(String n, String e) {
         this.n = new BigInteger(n, 16);
         this.e = new BigInteger(e, 16);
     }
 
-    public String RSAEncrypt(String pwd) {
-        BigInteger r = RSADoPublic(
+    public String rsaEncrypt(String pwd) {
+        BigInteger r = rsaDoPublic(
                 Objects.requireNonNull(pkcs1pad2(pwd, (n.bitLength() + 7) >> 3))
         );
         String sp = r.toString(16);
-        if ((sp.length() & 1) != 0)
+        if ((sp.length() & 1) != 0) {
             sp = "0" + sp;
+        }
         return sp;
     }
 
-    private BigInteger RSADoPublic(BigInteger x) {
+    private BigInteger rsaDoPublic(BigInteger x) {
         return x.modPow(e, n);
     }
 
@@ -44,24 +45,29 @@ public class RSA {
         int i = s.length() - 1;
         while (i >= 0 && n > 0) {
             int c = s.codePointAt(i--);
-            if (c < 128) { // encode using utf-8
+            // encode using utf-8
+            if (c < 128) {
                 ba[--n] = new Byte(String.valueOf(c));
-            } else if (c < 2048) {
-                ba[--n] = new Byte(String.valueOf((c & 63) | 128));
-                ba[--n] = new Byte(String.valueOf((c >> 6) | 192));
             } else {
-                ba[--n] = new Byte(String.valueOf((c & 63) | 128));
-                ba[--n] = new Byte(String.valueOf(((c >> 6) & 63) | 128));
-                ba[--n] = new Byte(String.valueOf((c >> 12) | 224));
+                Byte aByte = new Byte(String.valueOf((c & 63) | 128));
+                ba[--n] = aByte;
+                if (c < 2048) {
+                    ba[--n] = new Byte(String.valueOf((c >> 6) | 192));
+                } else {
+                    ba[--n] = new Byte(String.valueOf(((c >> 6) & 63) | 128));
+                    ba[--n] = new Byte(String.valueOf((c >> 12) | 224));
+                }
             }
         }
         ba[--n] = new Byte("0");
         byte[] temp = new byte[1];
         Random rdm = new Random(47L);
-        while (n > 2) { // random non-zero pad
+        // random non-zero pad
+        while (n > 2) {
             temp[0] = new Byte("0");
-            while (temp[0] == 0)
+            while (temp[0] == 0) {
                 rdm.nextBytes(temp);
+            }
             ba[--n] = temp[0];
         }
         ba[--n] = 2;
