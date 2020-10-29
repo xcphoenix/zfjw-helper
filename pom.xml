@@ -6,7 +6,45 @@
 	
 	<groupId>top.xcphoenix</groupId>
 	<artifactId>zfjw</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>0.1</version>
+	<packaging>jar</packaging>
+	
+	<name>The toolkit for education system </name>
+	<description>The toolkit for education system(正方教务) to the Central Repository.</description>
+	<url>https://github.com/PhoenixXC/ZFJW-Helper</url>
+	
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	
+	<developers>
+		<developer>
+			<name>xcphoenix</name>
+			<email>bmingyy@qq.com</email>
+			<url>https://github.com/PhoenixXC</url>
+		</developer>
+	</developers>
+	
+	<scm>
+		<url>https://github.com/PhoenixXC/ZFJW-Helper</url>
+		<connection>git@github.com:PhoenixXC/ZFJW-Helper.git</connection>
+		<developerConnection>https://github.com/PhoenixXC</developerConnection>
+	</scm>
+	
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+		</repository>
+	</distributionManagement>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -83,6 +121,73 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
+			<!-- for publish to Maven repo -->
+			<!--生成Source jar文件-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!--生成Javadoc，关闭 doclint, 避免注解检查不通过-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.0.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<additionalJOptions>
+								<additionalJOption>-Xdoclint:none</additionalJOption>
+							</additionalJOptions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!--Maven GPG插件用于使用以下配置对组件进行签名-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!--Nexus Staging Maven插件是将组件部署到OSSRH并将其发布到Central Repository的推荐方法-->
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>false</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+			<!-- release plugin,用于发布到release仓库部署插件 -->
+			<!--<plugin>-->
+			<!--	<groupId>org.apache.maven.plugins</groupId>-->
+			<!--	<artifactId>maven-release-plugin</artifactId>-->
+			<!--	<version>2.4.2</version>-->
+			<!--</plugin>-->
 		</plugins>
 	</build>
 
