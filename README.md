@@ -1,4 +1,6 @@
 # ZFJW-Helper
+![Maven Central](https://img.shields.io/maven-central/v/top.xcphoenix/zfjw?style=flat-square) ![GitHub](https://img.shields.io/github/license/PhoenixXC/ZFJW-Helper?style=flat-square)
+
 新正方教务系统
 
 ## 使用
