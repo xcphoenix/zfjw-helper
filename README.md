@@ -3,6 +3,16 @@
 
 ## 使用
 
+Maven：
+```xml
+<!-- https://mvnrepository.com/artifact/top.xcphoenix/zfjw -->
+<dependency>
+    <groupId>top.xcphoenix</groupId>
+    <artifactId>zfjw</artifactId>
+    <version>0.1</version>
+</dependency>
+```
+
 示例代码：
 
 ```java
