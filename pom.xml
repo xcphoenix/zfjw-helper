@@ -53,7 +53,7 @@
 		<maven.compiler.source>8</maven.compiler.source>
 		<maven.compiler.target>8</maven.compiler.target>
 		
-		<pk.httpclient.version>4.5.10</pk.httpclient.version>
+		<pk.httpclient.version>4.5.13</pk.httpclient.version>
 		<pk.jsoup.version>1.12.2</pk.jsoup.version>
 		<pk.fastjson.version>1.2.68</pk.fastjson.version>
 		<pk.lombok.version>1.18.12</pk.lombok.version>
